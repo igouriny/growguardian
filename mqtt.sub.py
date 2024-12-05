@@ -21,6 +21,11 @@ def on_message(client, userdata, msg):
     sensor_data["humidity"].append(humidity)
     print(temperature, humidity)
 
+    # Write the data to a file
+    with open("historicaldata.txt", "a") as file:
+        file.write(f"{temperature},{humidity}\n")
+
+
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
