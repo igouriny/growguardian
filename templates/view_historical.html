@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Historical Data - GrowGuardian IoT</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        nav {
+            background-color: #444;
+            text-align: center;
+            padding: 0.5em 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1em 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>View Historical Data - Grow Guardian</h1>
+</header>
+
+<nav>
+    <a href="/home">Home</a>
+    <a href="/historical_data">Historical Data</a>
+    <a href="/live_data">Live Data</a>
+    <a href="/about">About Us</a>
+    <a href="/logout">Logout</a>
+</nav>
+
+<div class="container">
+    <h2>Data from {{ filename }}</h2>
+    <table>
+        <tr>
+            <th>Temperature</th>
+            <th>Humidity</th>
+        </tr>
+        {% for record in data %}
+        <tr>
+            <td>{{ record.temperature }}</td>
+            <td>{{ record.humidity }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<footer>
+    &copy; 2024 GrowGuardian IoT Project
+</footer>
+
+</body>
+</html>

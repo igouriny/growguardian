@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Data - GrowGuardian</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        nav {
+            background-color: #444;
+            text-align: center;
+            padding: 0.5em 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1em 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 95%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            margin-bottom: 60px; /* Account for footer height */
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+        }
+
+        .charts-wrapper {
+            display: flex; /* Use flexbox to arrange charts horizontally */
+            justify-content: space-between; /* Add spacing between charts */
+            gap: 20px;
+        }
+
+        .chart-container {
+            flex: 1; /* Allow charts to scale equally */
+            height: 500px; /* Fixed height for each chart */
+        }
+
+        canvas {
+            display: block;
+            width: 100%; /* Ensure charts take full width of their container */
+            height: 100%; /* Ensure charts maintain consistent height */
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>Live Data - GrowGuardian</h1>
+</header>
+
+<nav>
+    <a href="/home">Home</a>
+    <a href="/historical_data">Historical Data</a>
+    <a href="/live_data">Live Data</a>
+    <a href="/about">About Us</a>
+    <a href="/logout">Logout</a>
+</nav>
+
+<div class="container">
+    <h1>Live Sensor Data</h1>
+    <div class="charts-wrapper">
+        <!-- Temperature Chart -->
+        <div class="chart-container">
+            <h2>Temperature (°C)</h2>
+            <canvas id="temperatureChart"></canvas>
+        </div>
+        <!-- Humidity Chart -->
+        <div class="chart-container">
+            <h2>Humidity (%)</h2>
+            <canvas id="humidityChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<footer>
+    &copy; 2024 GrowGuardian IoT Project
+</footer>
+
+<script>
+    // Temperature Chart Setup
+    const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+    const temperatureChart = new Chart(tempCtx, {
+        type: 'line',
+        data: {
+            labels: [], // Time labels
+            datasets: [
+                {
+                    label: 'Temperature (°C)',
+                    data: [], // Temperature data
+                    borderColor: 'red',
+                    borderWidth: 2,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Allow chart to resize properly within container
+            scales: {
+                x: {
+                    title: { display: true, text: 'Time' }
+                },
+                y: {
+                    title: { display: true, text: 'Temperature (°C)' }
+                }
+            }
+        }
+    });
+
+    // Humidity Chart Setup
+    const humidCtx = document.getElementById('humidityChart').getContext('2d');
+    const humidityChart = new Chart(humidCtx, {
+        type: 'line',
+        data: {
+            labels: [], // Time labels
+            datasets: [
+                {
+                    label: 'Humidity (%)',
+                    data: [], // Humidity data
+                    borderColor: 'blue',
+                    borderWidth: 2,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // Allow chart to resize properly within container
+            scales: {
+                x: {
+                    title: { display: true, text: 'Time' }
+                },
+                y: {
+                    title: { display: true, text: 'Humidity (%)' }
+                }
+            }
+        }
+    });
+
+    // Function to fetch live data from the Flask API endpoint
+    function fetchLiveData() {
+        fetch('/live_data_api')
+            .then(response => response.json())
+            .then(data => {
+                const now = new Date().toLocaleTimeString();
+
+                // Update Temperature Chart
+                temperatureChart.data.labels.push(now); // Add current time to labels
+                temperatureChart.data.datasets[0].data.push(data.temperature); // Add temperature
+                temperatureChart.update(); // Update the chart
+                if (temperatureChart.data.labels.length > 20) {
+                    temperatureChart.data.labels.shift();
+                    temperatureChart.data.datasets[0].data.shift();
+                }
+
+                // Update Humidity Chart
+                humidityChart.data.labels.push(now); // Add current time to labels
+                humidityChart.data.datasets[0].data.push(data.humidity); // Add humidity
+                humidityChart.update(); // Update the chart
+                if (humidityChart.data.labels.length > 20) {
+                    humidityChart.data.labels.shift();
+                    humidityChart.data.datasets[0].data.shift();
+                }
+            });
+    }
+
+    // Fetch live data every 2 seconds
+    setInterval(fetchLiveData, 2000);
+</script>
+
+</body>
+</html>
